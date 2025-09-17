@@ -27,7 +27,13 @@ jobs:
 
   publish:
     # needs: [verify]
-    if: github.event_name == 'push'
+    if: |
+      github.repository == 'bastienvty/latexdevcontainer' &&
+      (
+        github.event_name == 'push' ||
+        github.event_name == 'release' ||
+        (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
+      )
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,8 +43,9 @@ jobs:
 
       - uses: docker/login-action@v2
         with:
-          username: qmcgaw
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set variables
         id: vars
@@ -67,7 +74,7 @@ jobs:
             COMMIT=${{ steps.vars.outputs.commit }}
             VERSION=${{ steps.vars.outputs.version }}
             SCHEME=scheme-basic
-          tags: qmcgaw/latexdevcontainer:${{ steps.vars.outputs.version }}
+          tags: ghcr.io/${{ github.repository }}:${{ steps.vars.outputs.version }}
           push: true
 
       - name: Build and push scheme-full image
@@ -79,5 +86,5 @@ jobs:
             COMMIT=${{ steps.vars.outputs.commit }}
             VERSION=${{ steps.vars.outputs.version }}
             SCHEME=scheme-full
-          tags: qmcgaw/latexdevcontainer:${{ steps.vars.outputs.version }}-full
+          tags: ghcr.io/${{ github.repository }}:${{ steps.vars.outputs.version }}-full
           push: true
