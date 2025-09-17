@@ -109,7 +109,7 @@ texhash
 - You can build the development image yourself:
 
   ```sh
-  docker build -t qmcgaw/latexdevcontainer -f Dockerfile https://github.com/qdm12/latexdevcontainer.git
+  docker build -t ghcr.io/bastienvty/latexdevcontainer -f Dockerfile https://github.com/bastienvty/latexdevcontainer.git
   ```
 
 - You can extend the Docker image `ghcr.io/bastienvty/latexdevcontainer` with your own instructions.
